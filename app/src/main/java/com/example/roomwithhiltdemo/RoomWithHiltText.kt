@@ -1,6 +1,8 @@
 package com.example.roomwithhiltdemo
 
 import android.content.Context
+import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.ViewModel
 import androidx.room.*
 import dagger.Module
 import dagger.Provides
@@ -35,15 +37,14 @@ abstract class AppDatabase : RoomDatabase() {
 
 
 
-@Singleton
 class MainRepository @Inject constructor(
-    private val Maindao: MainDao
+    private val maindao: MainDao
 ){
     // Other functions from Maindao.kt
 
-    suspend fun numberOfItemsInDB() = Maindao.numberOfItemsInDB()
+    suspend fun numberOfItemsInDB() = maindao.numberOfItemsInDB()
 
-    suspend fun insertdata(user: User) = Maindao.insetUser(user)
+    suspend fun insertdata(user: User) = maindao.insetUser(user)
 }
 
 
@@ -67,14 +68,14 @@ object AppModule {
         db.getMaindao() // The reason we can implement a Dao for the database
 }
 
-//class MainViewModel @ViewModelInject constructor(
-//    private val repository: MainRepository
-//): ViewModel() {
-//    suspend fun databaseSize() : Int {
-//        return repository.numberOfItemsInDB()
-//    }
-//
-//    suspend fun insertdata(user: User) {
-//        repository.insertdata(user)
-//    }
-//}
+class MainViewModel @ViewModelInject constructor(
+    private val repository: MainRepository
+): ViewModel() {
+    suspend fun databaseSize() : Int {
+        return repository.numberOfItemsInDB()
+    }
+
+    suspend fun insertdata(user: User) {
+        repository.insertdata(user)
+    }
+}
